@@ -1,0 +1,9 @@
+# Mac OS system files - will match at any level
+**/.DS_Store
+**/.DS_Store?
+**/._*
+
+# Python cache files - will match at any level
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class 
