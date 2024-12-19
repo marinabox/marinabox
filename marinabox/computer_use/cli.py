@@ -6,6 +6,7 @@ from .tools import ToolCollection, ComputerTool, BashTool, EditTool
 from .loop import sampling_loop
 
 async def main(prompt: str, api_key: str, port: int = 8002):
+    
     def output_callback(content):
         if content["type"] == "text":
             print(f"Assistant: {content['text']}")
@@ -38,7 +39,8 @@ async def main(prompt: str, api_key: str, port: int = 8002):
         output_callback=output_callback,
         tool_output_callback=tool_output_callback,
         api_response_callback=api_response_callback,
-        api_key=api_key
+        api_key=api_key,
+        tools=tools
     )
 
 if __name__ == "__main__":

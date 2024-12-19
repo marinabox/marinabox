@@ -130,5 +130,6 @@ def computer_use(session_identifier, command):
         click.echo("Error: No session found with this ID or tag", err=True)
         return
 
+    
     # Execute computer use command
     asyncio.run(computer_use_main(command, api_key, session.computer_use_port)) 

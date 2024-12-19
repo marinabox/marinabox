@@ -81,17 +81,13 @@ async def sampling_loop(
         [httpx.Request, httpx.Response | object | None, Exception | None], None
     ],
     api_key: str,
+    tools: ToolCollection,
     only_n_most_recent_images: int | None = None,
     max_tokens: int = 4096,
 ):
     """
     Agentic sampling loop for the assistant/tool interaction of computer use.
     """
-    tool_collection = ToolCollection(
-        ComputerTool(),
-        BashTool(),
-        EditTool(),
-    )
     system = BetaTextBlockParam(
         type="text",
         text=f"{SYSTEM_PROMPT}{' ' + system_prompt_suffix if system_prompt_suffix else ''}",
@@ -134,7 +130,7 @@ async def sampling_loop(
                 messages=messages,
                 model=model,
                 system=[system],
-                tools=tool_collection.to_params(),
+                tools=tools.to_params(),
                 betas=betas,
             )
         except (APIStatusError, APIResponseValidationError) as e:
@@ -162,7 +158,7 @@ async def sampling_loop(
         for content_block in response_params:
             output_callback(content_block)
             if content_block["type"] == "tool_use":
-                result = await tool_collection.run(
+                result = await tools.run(
                     name=content_block["name"],
                     tool_input=cast(dict[str, Any], content_block["input"]),
                 )
