@@ -35,6 +35,21 @@ Full documentation is available at [https://marinabox.mintlify.app/get-started/i
 - Python 3.12 or higher
 - pip (Python package installer)
 
+## Installation
+
+1. First, ensure you have Docker installed on your system. If not, [install Docker](https://docs.docker.com/get-docker/) for your operating system.
+
+2. Pull the required Docker images:
+```bash
+docker pull marinabox/marinabox-browser:latest
+docker pull marinabox/marinabox-desktop:latest
+```
+
+3. Install the Marinabox package:
+```bash
+pip install marinabox
+```
+
 ## Important Note
 
 The provided Docker images are built for Mac ARM64 architecture (Apple Silicon). For other architectures:
@@ -50,20 +65,6 @@ docker build --platform <your-platform> -t marinabox/marinabox-browser .
 docker build --platform <your-platform> -t marinabox/marinabox-desktop .
 ```
 
-## Installation
-
-1. First, ensure you have Docker installed on your system. If not, [install Docker](https://docs.docker.com/get-docker/) for your operating system.
-
-2. Pull the required Docker images:
-```bash
-docker pull marinabox/marinabox-browser:latest
-docker pull marinabox/marinabox-desktop:latest
-```
-
-3. Install the Marinabox package:
-```bash
-pip install marinabox
-```
 
 ## Usage Example
 
