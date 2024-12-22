@@ -29,6 +29,10 @@ MarinaBox is a toolkit for creating and managing secure, isolated environments f
 - **Multi-session Management**: Run multiple isolated environments simultaneously
 - **Session Tagging**: Organize and track sessions with custom tags
 
+## Documentation
+
+Full documentation is available at [https://marinabox.mintlify.app/get-started/introduction](https://marinabox.mintlify.app/get-started/introduction)
+
 ## Prerequisites
 
 - Docker
