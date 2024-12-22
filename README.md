@@ -2,6 +2,34 @@
 
 Containerized sandboxes for AI agents
 
+## Overview
+
+MarinaBox is a toolkit for creating and managing secure, isolated environments for AI agents. It provides:
+
+### Core Features
+
+1. **Secure Sandboxed Environments**
+   - Run isolated browser and desktop sessions locally or cloud
+   - Perfect for AI agent tasks(Computer Use) and browser automation
+
+2. **Comprehensive SDK & CLI**
+   - Python SDK for programmatic control
+   - Command-line interface for session management
+   - Real-time monitoring and control capabilities
+   - Integration with popular automation tools (Playwright, Selenium)
+
+3. **Interactive UI Dashboard**
+   - Live session viewing and control
+   - Session recording and playback
+   - Session management interface
+
+### Additional Features
+
+- **Cloud Integration**: Deploy sandboxes to major cloud providers(coming soon)
+- **VNC Support**: Remote desktop access to sessions
+- **Multi-session Management**: Run multiple isolated environments simultaneously
+- **Session Tagging**: Organize and track sessions with custom tags
+
 ## Prerequisites
 
 - Docker
