@@ -1,4 +1,7 @@
-<img src="frontend/public/logo.svg" alt="MarinaBox Logo" width="100" height="100" />
+<div align="center">
+  <img src="frontend/public/logo.svg" alt="MarinaBox Logo" width="100" height="100" />
+  <h1>MarinaBox</h1>
+</div>
 
 # MarinaBox
 
