@@ -3,8 +3,6 @@
   <h1>MarinaBox</h1>
 </div>
 
-# MarinaBox
-
 MarinaBox is a toolkit for creating and managing secure, isolated environments for AI agents. It provides:
 
 ### Core Features
