@@ -35,6 +35,21 @@ MarinaBox is a toolkit for creating and managing secure, isolated environments f
 - Python 3.12 or higher
 - pip (Python package installer)
 
+## Important Note
+
+The provided Docker images are built for Mac ARM64 architecture (Apple Silicon). For other architectures:
+
+1. Clone the sandbox repository:
+```bash
+git clone https://github.com/marinabox/marinabox-sandbox
+```
+
+2. Build the images with your target platform:
+```bash
+docker build --platform <your-platform> -t marinabox/marinabox-browser .
+docker build --platform <your-platform> -t marinabox/marinabox-desktop .
+```
+
 ## Installation
 
 1. First, ensure you have Docker installed on your system. If not, [install Docker](https://docs.docker.com/get-docker/) for your operating system.
