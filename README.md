@@ -26,7 +26,6 @@ MarinaBox is a toolkit for creating and managing secure, isolated environments f
 ### Additional Features
 
 - **Cloud Integration**: Deploy sandboxes to major cloud providers(coming soon)
-- **VNC Support**: Remote desktop access to sessions
 - **Multi-session Management**: Run multiple isolated environments simultaneously
 - **Session Tagging**: Organize and track sessions with custom tags
 
