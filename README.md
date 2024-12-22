@@ -1,4 +1,6 @@
-# Marinabox
+<img src="frontend/public/logo.svg" alt="MarinaBox Logo" width="100" height="100" />
+
+# MarinaBox
 
 MarinaBox is a toolkit for creating and managing secure, isolated environments for AI agents. It provides:
 
