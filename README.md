@@ -1,11 +1,11 @@
 # Marinabox
 
-A container management system for browser automation that provides both browser and desktop environments.
+Containerized sandboxes for AI agents
 
 ## Prerequisites
 
 - Docker
-- Python 3.7 or higher
+- Python 3.12 or higher
 - pip (Python package installer)
 
 ## Installation
@@ -20,15 +20,30 @@ docker pull marinabox/marinabox-desktop:latest
 
 3. Install the Marinabox package:
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/marinabox
-cd marinabox
-
-# Install the package in development mode
-pip install -e .
-```
-
-Alternatively, you can install directly from PyPI (if published):
-```bash
 pip install marinabox
 ```
+
+## Usage Example
+
+Here's a basic example of how to use the Marinabox SDK:
+
+```python
+from marinabox import MarinaboxSDK
+
+# Initialize the SDK
+mb = MarinaboxSDK()
+
+# Set Anthropic API key
+mb.set_anthropic_key(ANTHROPIC_API_KEY)
+
+# Create a new session
+session = mb.create_session(env_type="browser", tag="my-session")
+print(f"Created session: {session.session_id}")
+
+# List active sessions
+sessions = mb.list_sessions()
+for s in sessions:
+    print(f"Active session: {s.session_id} (Tag: {s.tag})")
+
+# Execute a computer use command
+mb.computer_use_command("my-session", "Navigate to https://x.ai")
