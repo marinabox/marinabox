@@ -6,6 +6,7 @@ from anthropic.types.beta import BetaToolTextEditor20241022Param
 
 from .base import BaseAnthropicTool, CLIResult, ToolError, ToolResult
 from .run import maybe_truncate, run
+import httpx
 
 Command = Literal[
     "view",
@@ -29,6 +30,8 @@ class EditTool(BaseAnthropicTool):
     _file_history: dict[Path, list[str]]
 
     def __init__(self):
+        self.api_base_url = "http://localhost:8002"
+        self.client = httpx.AsyncClient()
         self._file_history = defaultdict(list)
         super().__init__()
 
@@ -50,35 +53,25 @@ class EditTool(BaseAnthropicTool):
         insert_line: int | None = None,
         **kwargs,
     ):
-        _path = Path(path)
-        self.validate_path(command, _path)
-        if command == "view":
-            return await self.view(_path, view_range)
-        elif command == "create":
-            if file_text is None:
-                raise ToolError("Parameter `file_text` is required for command: create")
-            self.write_file(_path, file_text)
-            self._file_history[_path].append(file_text)
-            return ToolResult(output=f"File created successfully at: {_path}")
-        elif command == "str_replace":
-            if old_str is None:
-                raise ToolError(
-                    "Parameter `old_str` is required for command: str_replace"
-                )
-            return self.str_replace(_path, old_str, new_str)
-        elif command == "insert":
-            if insert_line is None:
-                raise ToolError(
-                    "Parameter `insert_line` is required for command: insert"
-                )
-            if new_str is None:
-                raise ToolError("Parameter `new_str` is required for command: insert")
-            return self.insert(_path, insert_line, new_str)
-        elif command == "undo_edit":
-            return self.undo_edit(_path)
-        raise ToolError(
-            f'Unrecognized command {command}. The allowed commands for the {self.name} tool are: {", ".join(get_args(Command))}'
-        )
+        try:
+            response = await self.client.post(
+                f"{self.api_base_url}/edit",
+                json={
+                    "command": command,
+                    "path": path,
+                    "file_text": file_text,
+                    "view_range": view_range,
+                    "old_str": old_str,
+                    "new_str": new_str,
+                    "insert_line": insert_line,
+                }
+            )
+            response.raise_for_status()
+            data = response.json()
+            return CLIResult(output=data.get("output"), error=data.get("error"))
+
+        except httpx.HTTPError as e:
+            return ToolResult(error=f"API request failed: {str(e)}")
 
     def validate_path(self, command: str, path: Path):
         """

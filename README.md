@@ -64,8 +64,8 @@ git clone https://github.com/marinabox/marinabox-sandbox
 
 2. Build the images with your target platform:
 ```bash
-docker build --platform <your-platform> -t marinabox/marinabox-browser .
-docker build --platform <your-platform> -t marinabox/marinabox-desktop .
+docker build --platform <your-platform> -f Dockerfile.chromium -t marinabox/marinabox-browser .
+docker build --platform <your-platform> -f Dockerfile.desktop -t marinabox/marinabox-desktop .
 ```
 
 

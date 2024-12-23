@@ -3,6 +3,7 @@ import os
 from typing import ClassVar, Literal
 
 from anthropic.types.beta import BetaToolBash20241022Param
+import httpx
 
 from .base import BaseAnthropicTool, CLIResult, ToolError, ToolResult
 
@@ -115,27 +116,28 @@ class BashTool(BaseAnthropicTool):
 
     def __init__(self):
         self._session = None
+        self.api_base_url = "http://localhost:8002"
+        self.client = httpx.AsyncClient()
         super().__init__()
 
     async def __call__(
         self, command: str | None = None, restart: bool = False, **kwargs
     ):
-        if restart:
-            if self._session:
-                self._session.stop()
-            self._session = _BashSession()
-            await self._session.start()
+        try:
+            response = await self.client.post(
+                f"{self.api_base_url}/bash",
+                json={"command": command, "restart": restart}
+            )
+            response.raise_for_status()
+            data = response.json()
+            
+            if data.get("system"):
+                return ToolResult(system=data["system"])
+            
+            return CLIResult(output=data.get("output"), error=data.get("error"))
 
-            return ToolResult(system="tool has been restarted.")
-
-        if self._session is None:
-            self._session = _BashSession()
-            await self._session.start()
-
-        if command is not None:
-            return await self._session.run(command)
-
-        raise ToolError("no command provided.")
+        except httpx.HTTPError as e:
+            return ToolResult(error=f"API request failed: {str(e)}")
 
     def to_params(self) -> BetaToolBash20241022Param:
         return {

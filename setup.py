@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="marinabox",
-    version="0.1.0",
+    version="0.1.1",
     packages=find_packages(),
     install_requires=[
         "docker",
@@ -24,15 +24,15 @@ setup(
             'mb=marinabox.cli:cli',
         ],
     },
-    author="Your Name",
-    description="A container management system for browser automation",
+    author="bayllama",
+    description="An open-source toolkit for deploying containerized desktops and browsers tailored for AI agents",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/marinabox",
+    url="https://github.com/bayllama/marinabox",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.7",
+    python_requires=">=3.12",
 )
