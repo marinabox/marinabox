@@ -1,6 +1,13 @@
 <div align="center">
   <img src="frontend/public/logo.svg" alt="MarinaBox Logo" width="100" height="100" />
   <h1>MarinaBox</h1>
+  
+  <p>
+    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/marinabox/marinabox?style=flat-square">
+    <img alt="GitHub forks" src="https://img.shields.io/github/forks/marinabox/marinabox?style=flat-square">
+    <img alt="GitHub issues" src="https://img.shields.io/github/issues/marinabox/marinabox?style=flat-square">
+    <img alt="GitHub license" src="https://img.shields.io/github/license/marinabox/marinabox?style=flat-square">
+  </p>
 </div>
 
 MarinaBox is a toolkit for creating and managing secure, isolated environments for AI agents. It provides:
@@ -93,3 +100,15 @@ for s in sessions:
 
 # Execute a computer use command
 mb.computer_use_command("my-session", "Navigate to https://x.ai")
+
+```
+
+## License
+
+MarinaBox is released under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+This project makes significant use of:
+- [noVNC](https://github.com/novnc/noVNC), an open source VNC client using HTML5 (WebSockets, Canvas). noVNC is licensed under the MPL-2.0 License.
+- [Anthropic Quickstarts](https://github.com/anthropics/anthropic-quickstarts), specifically the Computer Use Demo which provided inspiration for the sandbox implementation. Licensed under the MIT License.
