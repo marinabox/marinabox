@@ -3,10 +3,10 @@
   <h1>MarinaBox</h1>
   
   <p>
-    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/marinabox/marinabox?style=flat-square">
-    <img alt="GitHub forks" src="https://img.shields.io/github/forks/marinabox/marinabox?style=flat-square">
-    <img alt="GitHub issues" src="https://img.shields.io/github/issues/marinabox/marinabox?style=flat-square">
-    <img alt="GitHub license" src="https://img.shields.io/github/license/marinabox/marinabox?style=flat-square">
+    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/marinabox/marinabox?style=flat-square&logo=github">
+    <img alt="GitHub forks" src="https://img.shields.io/github/forks/marinabox/marinabox?style=flat-square&logo=github">
+    <img alt="GitHub issues" src="https://img.shields.io/github/issues/marinabox/marinabox?style=flat-square&logo=github">
+    <img alt="GitHub license" src="https://img.shields.io/github/license/marinabox/marinabox?style=flat-square&logo=github">
   </p>
 </div>
 
