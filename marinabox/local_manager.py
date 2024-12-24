@@ -93,7 +93,7 @@ class LocalContainerManager:
             ports['9222/tcp'] = debug_port
         
         # Select appropriate image
-        image = "marinabox-browser" if env_type == "browser" else "marinabox-desktop"
+        image = "marinabox/marinabox-browser" if env_type == "browser" else "marinabox/marinabox-desktop"
         
         container = self.client.containers.run(
             image,
