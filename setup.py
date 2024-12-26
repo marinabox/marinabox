@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="marinabox",
-    version="0.1.2",
+    version="0.1.3",
     packages=find_packages(),
     install_requires=[
         "docker",
@@ -17,6 +17,9 @@ setup(
         "google-auth<3,>=2",
         "pytest==8.3.3",
         "pytest-asyncio==0.23.6",
+        "langgraph==0.2.60",
+        "langchain-anthropic==0.3.1",
+        "langchain-core==0.3.28"
     ],
     entry_points={
         'console_scripts': [
