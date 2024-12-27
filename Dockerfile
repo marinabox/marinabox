@@ -28,9 +28,13 @@ COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install stagehand
 
 # Create directory for session storage
 RUN mkdir -p /root/.marinabox
+
+# Add supervisord configuration for Stagehand
+RUN echo '[program:stagehand]\ncommand=stagehand --port 9090\nautostart=%(ENV_ENABLE_STAGEHAND)s\nautorestart=true' >> /etc/supervisor/conf.d/stagehand.conf
 
 # Expose API port
 EXPOSE 8000
