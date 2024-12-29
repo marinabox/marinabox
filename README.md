@@ -47,6 +47,10 @@ Full documentation is available at [https://marinabox.mintlify.app/get-started/i
 
 ## Installation
 
+<a href="https://www.youtube.com/watch?v=kURXKpFtTKM">
+  <img src="https://img.youtube.com/vi/kURXKpFtTKM/maxresdefault.jpg" alt="MarinaBox Installation Tutorial" width="600"/>
+</a>
+
 1. First, ensure you have Docker installed on your system. If not, [install Docker](https://docs.docker.com/get-docker/) for your operating system.
 
 2. Pull the required Docker images:
