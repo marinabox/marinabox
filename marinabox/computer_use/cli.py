@@ -6,17 +6,22 @@ from .tools import ToolCollection, ComputerTool, BashTool, EditTool
 from .loop import sampling_loop
 
 async def main(prompt: str, api_key: str, port: int = 8002):
+    responses = []  # Create a list to store responses
     
     def output_callback(content):
         if content["type"] == "text":
+            responses.append(("text", content['text']))
             print(f"Assistant: {content['text']}")
         elif content["type"] == "tool_use":
+            responses.append(("tool_use", content['name'], content['input']))
             print(f"Tool use: {content['name']} with input {content['input']}")
 
     def tool_output_callback(result, tool_id):
         if result.output:
+            responses.append(("tool_output", result.output))
             print(f"Tool output: {result.output}")
         if result.error:
+            responses.append(("tool_error", result.error))
             print(f"Tool error: {result.error}")
 
     def api_response_callback(request, response, error):
@@ -42,6 +47,8 @@ async def main(prompt: str, api_key: str, port: int = 8002):
         api_key=api_key,
         tools=tools
     )
+    
+    return responses  # Return the collected responses
 
 if __name__ == "__main__":
     asyncio.run(main())

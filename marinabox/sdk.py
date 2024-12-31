@@ -83,13 +83,16 @@ class MarinaboxSDK:
         self, 
         session_identifier: str, 
         command: str
-    ) -> None:
+    ) -> List:
         """
         Execute a computer use command on a session.
         
         Args:
             session_identifier: Session ID or tag
             command: Command to execute
+        
+        Returns:
+            List of response tuples containing the output
         
         Raises:
             ValueError: If API key is not set or session is not found
@@ -102,10 +105,11 @@ class MarinaboxSDK:
         if not session:
             raise ValueError("No session found with this ID or tag")
 
-        await computer_use_main(command, api_key, session.computer_use_port)
+        responses = await computer_use_main(command, api_key, session.computer_use_port)
+        return responses
 
-    def computer_use_command(self, session_identifier: str, command: str) -> None:
+    def computer_use_command(self, session_identifier: str, command: str) -> List:
         """
         Synchronous wrapper for execute_computer_use_command
         """
-        asyncio.run(self.execute_computer_use_command(session_identifier, command)) 
+        return asyncio.run(self.execute_computer_use_command(session_identifier, command)) 
