@@ -54,18 +54,13 @@ PROVIDER_TO_DEFAULT_MODEL_NAME: dict[APIProvider, str] = {
 # environment it is running in, and to provide any additional information that may be
 # helpful for the task at hand.
 SYSTEM_PROMPT = f"""<SYSTEM_CAPABILITY>
-* You are utilising an Alpine Linux virtual machine using {platform.machine()} architecture with internet access.
-* You can feel free to install Alpine Linux applications with your bash tool. Use curl instead of wget.
-* To open chrome, please just click on the chrome icon on the lower panel.  Note, chromium is what is installed on your system.
-* Using bash tool you can start GUI applications, but you need to set export DISPLAY=:99 and use a subshell. For example "(DISPLAY=:99 xterm &)". GUI apps run with bash tool will appear within your desktop environment, but they may take some time to appear. Take a screenshot to confirm it did.
-* When using your bash tool with commands that are expected to output very large quantities of text, redirect into a tmp file and use str_replace_editor or `grep -n -B <lines before> -A <lines after> <query> <filename>` to confirm output.
 * When viewing a page it can be helpful to zoom out so that you can see everything on the page.  Either that, or make sure you scroll down to see everything before deciding something isn't available.
 * When using your computer function calls, they take a while to run and send back to you.  Where possible/feasible, try to chain multiple of these calls all into one function calls request.
 * The current date is {datetime.today().strftime('%A, %B %-d, %Y')}.
 </SYSTEM_CAPABILITY>
 
 <IMPORTANT>
-* If the item you are looking at is a pdf, if after taking a single screenshot of the pdf it seems that you want to read the entire document instead of trying to continue to read the pdf from your screenshots + navigation, determine the URL, use curl to download the pdf, install and use pdftotext to convert it to a text file, and then read that text file directly with your StrReplaceEditTool.
+Make sure to thoroughly analyze the page before taking any action.
 </IMPORTANT>"""
 
 
@@ -84,6 +79,7 @@ async def sampling_loop(
     tools: ToolCollection,
     only_n_most_recent_images: int | None = None,
     max_tokens: int = 4096,
+    max_iterations: int = 20,
 ):
     """
     Agentic sampling loop for the assistant/tool interaction of computer use.
@@ -93,7 +89,9 @@ async def sampling_loop(
         text=f"{SYSTEM_PROMPT}{' ' + system_prompt_suffix if system_prompt_suffix else ''}",
     )
 
-    while True:
+    iteration_count = 0
+    while iteration_count < max_iterations:
+        iteration_count += 1
         enable_prompt_caching = False
         betas = [COMPUTER_USE_BETA_FLAG]
         image_truncation_threshold = only_n_most_recent_images or 0
@@ -171,6 +169,9 @@ async def sampling_loop(
             return messages
 
         messages.append({"content": tool_result_content, "role": "user"})
+    
+    output_callback({"type": "text", "text": "Maximum number of iterations reached."})
+    return messages
 
 
 def _maybe_filter_to_n_most_recent_images(

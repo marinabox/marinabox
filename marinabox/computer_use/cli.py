@@ -45,7 +45,8 @@ async def main(prompt: str, api_key: str, port: int = 8002):
         tool_output_callback=tool_output_callback,
         api_response_callback=api_response_callback,
         api_key=api_key,
-        tools=tools
+        tools=tools,
+        max_iterations=20
     )
     
     return responses  # Return the collected responses

@@ -4,10 +4,13 @@ from .models import BrowserSession
 from .config import Config
 import asyncio
 from .computer_use.cli import main as computer_use_main
+from pathlib import Path
 
 class MarinaboxSDK:
-    def __init__(self):
-        self.manager = LocalContainerManager()
+    def __init__(self, videos_path: Optional[str] = None):
+        self.manager = LocalContainerManager(
+            videos_path=Path(videos_path) if videos_path else None
+        )
         self.config = Config()
 
     def create_session(
@@ -37,9 +40,15 @@ class MarinaboxSDK:
         """Get details for a specific session"""
         return self.manager.get_session(session_id)
 
-    def stop_session(self, session_id: str) -> bool:
-        """Stop a session"""
-        return self.manager.stop_session(session_id)
+    def stop_session(self, session_id: str, video_filename: Optional[str] = None) -> bool:
+        """
+        Stop a session
+        
+        Args:
+            session_id: ID of the session to stop
+            video_filename: Optional custom filename for the video recording
+        """
+        return self.manager.stop_session(session_id, video_filename=video_filename)
 
     def list_closed_sessions(self) -> List[BrowserSession]:
         """List all closed sessions"""

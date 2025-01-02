@@ -5,6 +5,7 @@ from datetime import datetime
 from .config import Config
 import asyncio
 from .computer_use.cli import main as computer_use_main
+from pathlib import Path
 
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -47,10 +48,14 @@ def get(session_id):
 
 @local.command()
 @click.argument('session_id')
-def stop(session_id):
+@click.option('--video-dir', help='Custom directory to store video recording')
+@click.option('--video-filename', help='Custom filename for video recording')
+def stop(session_id, video_dir, video_filename):
     """Stop a browser session"""
-    manager = LocalContainerManager()
-    success = manager.stop_session(session_id)
+    manager = LocalContainerManager(
+        videos_path=Path(video_dir) if video_dir else None
+    )
+    success = manager.stop_session(session_id, video_filename=video_filename)
     if success:
         click.echo("Session stopped successfully")
     else:
