@@ -14,7 +14,8 @@ class MarinaboxSDK:
         self, 
         env_type: str = "browser", 
         resolution: str = "1280x800x24",
-        tag: Optional[str] = None
+        tag: Optional[str] = None,
+        stagehand_enabled: bool = False
     ) -> BrowserSession:
         """
         Create a new Marinabox session.
@@ -27,7 +28,7 @@ class MarinaboxSDK:
         Returns:
             BrowserSession object
         """
-        return self.manager.create_session(env_type=env_type, resolution=resolution, tag=tag)
+        return self.manager.create_session(env_type=env_type, resolution=resolution, tag=tag, stagehand_enabled=stagehand_enabled)
 
     def list_sessions(self) -> List[BrowserSession]:
         """List all active sessions"""

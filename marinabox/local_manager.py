@@ -4,17 +4,18 @@ import time
 import pickle
 import os
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
 
 from .models import BrowserSession
 
 class LocalContainerManager:
-    def __init__(self, base_debug_port: int = 4002, base_vnc_port: int = 5002, base_computer_use_port: int = 8002):
+    def __init__(self, base_debug_port: int = 4002, base_vnc_port: int = 5002, base_computer_use_port: int = 8002, base_stagehand_port: int = 9002):
         self.client = docker.from_env()
         self.base_debug_port = base_debug_port
         self.base_vnc_port = base_vnc_port
         self.base_computer_use_port = base_computer_use_port
+        self.base_stagehand_port = base_stagehand_port
         self.sessions = {}
         self.closed_sessions = {}
         self.storage_path = Path.home() / ".marinabox" / "sessions.pkl"
@@ -56,7 +57,7 @@ class LocalContainerManager:
             print(f"Error loading sessions: {e}")
             self.sessions = {}
     
-    def _find_available_ports(self, env_type: str) -> tuple[Optional[int], int, int]:
+    def _find_available_ports(self, env_type: str) -> tuple[Optional[int], int, int, Optional[int]]:
         used_vnc_ports = {session.vnc_port for session in self.sessions.values()}
         used_computer_use_ports = {session.computer_use_port for session in self.sessions.values()}
         
@@ -76,21 +77,37 @@ class LocalContainerManager:
         while computer_use_port in used_computer_use_ports:
             computer_use_port += 2
             
-        return debug_port, vnc_port, computer_use_port
+        used_stagehand_ports = {session.stagehand_port for session in self.sessions.values() 
+                              if hasattr(session, 'stagehand_port')}
+        
+        stagehand_port = self.base_stagehand_port
+        while stagehand_port in used_stagehand_ports:
+            stagehand_port += 2
+            
+        return debug_port, vnc_port, computer_use_port, stagehand_port
     
-    def create_session(self, env_type: str = "browser", resolution: str = "1280x800x24", tag: Optional[str] = None) -> BrowserSession:
+    def create_session(self, env_type: str = "browser", resolution: str = "1280x800x24", 
+                      tag: Optional[str] = None, enable_stagehand: bool = False) -> BrowserSession:
         if env_type not in ["browser", "desktop"]:
             raise ValueError("env_type must be either 'browser' or 'desktop'")
 
-        debug_port, vnc_port, computer_use_port = self._find_available_ports(env_type)
+        debug_port, vnc_port, computer_use_port, stagehand_port = self._find_available_ports(env_type)
         
-        # Configure ports based on environment type
+        # Configure ports and environment variables
         ports = {
             '6081/tcp': vnc_port,
             '8000/tcp': computer_use_port
         }
+        
+        environment = {
+            "RESOLUTION": resolution
+        }
+        
         if env_type == 'browser':
             ports['9222/tcp'] = debug_port
+            if enable_stagehand:
+                ports['9090/tcp'] = stagehand_port  # Stagehand's default port
+                environment["ENABLE_STAGEHAND"] = "1"
         
         # Select appropriate image
         image = "marinabox/marinabox-browser" if env_type == "browser" else "marinabox/marinabox-desktop"
@@ -98,7 +115,7 @@ class LocalContainerManager:
         container = self.client.containers.run(
             image,
             detach=True,
-            environment={"RESOLUTION": resolution},
+            environment=environment,
             ports=ports
         )
         
@@ -124,7 +141,9 @@ class LocalContainerManager:
             websocket_url=websocket_url,
             resolution=resolution,
             env_type=env_type,
-            tag=tag
+            tag=tag,
+            stagehand_port=stagehand_port if enable_stagehand else None,
+            stagehand_enabled=enable_stagehand
         )
         
         self.sessions[session.session_id] = session

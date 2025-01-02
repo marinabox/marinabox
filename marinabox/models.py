@@ -18,6 +18,9 @@ class BrowserSession:
     resolution: str = "1280x800x24"
     video_path: Optional[str] = None
     tag: Optional[str] = None
+    stagehand_port: Optional[int] = None
+    stagehand_enabled: bool = False
+
     
     # Add this to ensure the class can be pickled
     def __getstate__(self):
