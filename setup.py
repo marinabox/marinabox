@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="marinabox",
-    version="0.1.4",
+    version="0.1.6",
     packages=find_packages(),
     install_requires=[
         "docker",
@@ -19,6 +19,7 @@ setup(
         "pytest-asyncio==0.23.6",
         "langgraph==0.2.60",
         "langchain-anthropic==0.3.1",
+        "langchain-openai==0.2.2",
         "langchain-core==0.3.28"
     ],
     entry_points={
