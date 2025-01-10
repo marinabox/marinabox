@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from .models import BrowserSession
 
 class LocalContainerManager:
-    def __init__(self, base_debug_port: int = 4002, base_vnc_port: int = 5002, base_computer_use_port: int = 8002):
+    def __init__(self, base_debug_port: int = 4002, base_vnc_port: int = 5002, base_computer_use_port: int = 8002, videos_path: Optional[Path] = None):
         self.client = docker.from_env()
         self.base_debug_port = base_debug_port
         self.base_vnc_port = base_vnc_port
@@ -19,7 +19,7 @@ class LocalContainerManager:
         self.closed_sessions = {}
         self.storage_path = Path.home() / ".marinabox" / "sessions.pkl"
         self.closed_storage_path = Path.home() / ".marinabox" / "closed_sessions.pkl"
-        self.videos_path = Path.home() / ".marinabox" / "videos"
+        self.videos_path = videos_path or (Path.home() / ".marinabox" / "videos")
         self.videos_path.mkdir(parents=True, exist_ok=True)
         self._load_sessions()
         self._load_closed_sessions()
@@ -138,7 +138,7 @@ class LocalContainerManager:
     def get_session(self, session_id: str) -> Optional[BrowserSession]:
         return self.sessions.get(session_id)
     
-    def stop_session(self, session_id: str) -> bool:
+    def stop_session(self, session_id: str, video_filename: Optional[str] = None) -> bool:
         if session_id not in self.sessions:
             return False
             
@@ -146,16 +146,18 @@ class LocalContainerManager:
         try:
             container = self.client.containers.get(session.container_id)
             
-            # Gracefully stop ffmpeg first to ensure the video file is properly finalized
+            # Gracefully stop ffmpeg first
             container.exec_run("/usr/bin/supervisorctl -c /etc/supervisor.d/supervisord.ini stop ffmpeg")
-            # Wait a moment for ffmpeg to finish writing
             time.sleep(2)
             
-            # Copy the video file from container before stopping
-            video_filename = f"{session_id}.mp4"
+            # Use provided filename or default to session_id
+            video_filename = video_filename or f"{session_id}.mp4"
             video_path = self.videos_path / video_filename
             
-            # Use docker cp to copy the video file
+            # Create directory if it doesn't exist
+            video_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Copy the video file from container before stopping
             import subprocess
             subprocess.run([
                 "docker", "cp",
