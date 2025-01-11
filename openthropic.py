@@ -87,7 +87,7 @@ def should_continue(state: GraphState):
     
     lm_structured = llm.with_structured_output(ShouldContinueOutput)
     
-    messages = [SystemMessage(content="A certain person is giving insturctions to another person who has access to a computer to perform something on the computer. You have to determine by looking at the conversation history whether the person has completed the task or not. If they have completed the task, you should return 'should_not_continue'. If they have not completed the task, you should return 'should_continue'.")]
+    messages = [SystemMessage(content="A certain person is giving instructions to another person who has access to a computer to perform something on the computer. You have to determine by looking at the conversation history whether the person has completed the task or not. If they have completed the task, you should return 'should_not_continue'. If they have not completed the task, you should return 'should_continue'.")]
 
     messages.append(HumanMessage(content=f"The last message from the person giving instructions is: {state['conversation_history'][-1].content}"))
     
