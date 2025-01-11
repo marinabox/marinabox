@@ -16,6 +16,7 @@ function Dashboard() {
   const [sessions, setSessions] = useState([]);
   const [closedSessions, setClosedSessions] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
+  const [samthropicSession, setSamthropicSession] = useState(null);
 
   const fetchSessions = async () => {
     try {
@@ -72,6 +73,7 @@ function Dashboard() {
         <img src="/logo.png" alt="MarinaBox Logo" style={{ height: '40px' }} />
         MarinaBox
       </Typography>
+
       <Paper sx={{ mb: 2 }}>
         <Tabs value={tab} onChange={handleTabChange} centered>
           <Tab label="Running Sessions" />
@@ -79,10 +81,12 @@ function Dashboard() {
           <Tab label="All Sessions" />
         </Tabs>
       </Paper>
+      
       <SessionList 
         sessions={getDisplaySessions()} 
         onSessionClick={handleSessionClick}
       />
+      
       <SessionDialog
         session={selectedSession}
         onClose={handleCloseDialog}
