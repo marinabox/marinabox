@@ -35,12 +35,13 @@ import {
               sx={{ 
                 cursor: 'pointer',
                 '&:hover': { bgcolor: 'background.paper' },
+                border: session.tag === 'samthropic' ? '2px solid #1a237e' : 'none',
               }}
               onClick={() => onSessionClick(session)}
             >
               <CardContent>
                 <Typography variant="h6" gutterBottom>
-                  Session {session.session_id}
+                  {session.tag === 'samthropic' ? 'Samthropic Agent' : `Session ${session.session_id}`}
                 </Typography>
                 <Box sx={{ mb: 1 }}>
                   <Chip
@@ -53,7 +54,15 @@ import {
                     label={session.resolution}
                     color="primary"
                     size="small"
+                    sx={{ mr: 1 }}
                   />
+                  {session.tag === 'samthropic' && (
+                    <Chip
+                      label="AI Agent"
+                      color="secondary"
+                      size="small"
+                    />
+                  )}
                 </Box>
                 <Typography variant="body2" color="text.secondary">
                   Created {formatDistanceToNow(parseISO(session.created_at))} ago

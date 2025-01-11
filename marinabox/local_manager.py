@@ -21,6 +21,10 @@ class LocalContainerManager:
         self.closed_storage_path = Path.home() / ".marinabox" / "closed_sessions.pkl"
         self.videos_path = videos_path or (Path.home() / ".marinabox" / "videos")
         self.videos_path.mkdir(parents=True, exist_ok=True)
+        self.console_logs_path = Path("marinabox/data/console_logs")
+        self.console_logs_path.mkdir(parents=True, exist_ok=True)
+        self.input_queue_path = Path("marinabox/data/input_queue")
+        self.input_queue_path.mkdir(parents=True, exist_ok=True)
         self._load_sessions()
         self._load_closed_sessions()
 
@@ -129,6 +133,15 @@ class LocalContainerManager:
         
         self.sessions[session.session_id] = session
         self._save_sessions()
+        
+        # Create empty console log file for the session
+        console_log_file = self.console_logs_path / f"{session.session_id}.txt"
+        console_log_file.touch()
+        
+        # Create empty input queue file for the session
+        input_queue_file = self.input_queue_path / f"{session.session_id}.txt"
+        input_queue_file.touch()
+        
         return session
     
     def list_sessions(self) -> List[BrowserSession]:
@@ -226,3 +239,33 @@ class LocalContainerManager:
             return session
         
         return None
+
+    def get_console_log_path(self, session_id: str) -> Path:
+        """Get the path to a session's console log file"""
+        return self.console_logs_path / f"{session_id}.txt"
+
+    def write_to_console_log(self, session_id: str, message: str):
+        """Write a message to the session's console log"""
+        log_file = self.get_console_log_path(session_id)
+        with open(log_file, 'a') as f:
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            f.write(f"[{timestamp}] {message}\n")
+
+    def write_to_input_queue(self, session_id: str, message: str) -> bool:
+        """Write a message to the session's input queue"""
+        try:
+            session = self.get_session(session_id)
+            if not session:
+                return False
+                
+            input_file = self.input_queue_path / f"{session_id}.txt"
+            with open(input_file, "a") as f:
+                f.write(f"{message}\n")
+            return True
+        except Exception as e:
+            print(f"Error writing to input queue: {e}")
+            return False
+
+    def get_input_queue_path(self, session_id: str) -> Path:
+        """Get the path to a session's input queue file"""
+        return self.input_queue_path / f"{session_id}.txt"

@@ -7,9 +7,29 @@ import {
     Button,
     Typography,
     Box,
+    IconButton,
+    Popover,
   } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import LiveAgentConsole from './LiveAgentConsole';
+import ChatInput from './ChatInput';
+import { useState } from 'react';
   
   function SessionDialog({ session, onClose, onSessionStop }) {
+    const [chatHistory, setChatHistory] = useState([]);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    const handleInfoClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleInfoClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+
     if (!session) return null;
   
     const handleStopSession = async () => {
@@ -24,100 +44,146 @@ import {
       }
     };
   
+    const handleSendMessage = async (message) => {
+        try {
+            setIsProcessing(true);
+          
+            
+            // Add message to chat history
+            setChatHistory(prev => [...prev, { type: 'human', content: message }]);
+            
+            // Send to backend
+            await axios.post(`/api/sessions/${session.session_id}/chat`, null, {
+                params: { message }
+            });
+        } catch (error) {
+            console.error('Error sending message:', error);
+        }
+    };
+  
     return (
-      <Dialog open={!!session} onClose={onClose} maxWidth="lg" fullWidth>
-        <DialogTitle>
-          Session Details - {session.session_id}
+      <Dialog open={!!session} onClose={onClose} maxWidth="xl" fullWidth>
+        <DialogTitle sx={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 1
+        }}>
+            <Typography component="div" variant="h6">
+                Session {session.session_id}
+            </Typography>
+            <IconButton 
+                onClick={handleInfoClick}
+                size="small"
+                color="primary"
+            >
+                <InfoIcon />
+            </IconButton>
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleInfoClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+            >
+                <Box sx={{ p: 2, maxWidth: 300 }}>
+                    <Typography variant="subtitle2" gutterBottom>Session Details</Typography>
+                    <Typography variant="body2">Resolution: {session.resolution}</Typography>
+                    <Typography variant="body2">Debug Port: {session.debug_port}</Typography>
+                    <Typography variant="body2">VNC Port: {session.vnc_port}</Typography>
+                </Box>
+            </Popover>
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="body1" gutterBottom>
-              Status: {session.status}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              Resolution: {session.resolution}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              Debug Port: {session.debug_port}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              VNC Port: {session.vnc_port}
-            </Typography>
-          </Box>
-          
-          {session.status === 'running' && (
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                Live Session
-              </Typography>
-              <Box
-                sx={{
-                  position: 'relative',
-                  width: '100%',
-                  height: '60vh',
+          {session.status === 'running' ? (
+            <Box sx={{ 
+              display: 'flex',
+              flexDirection: 'column',
+              height: 'calc(75vh - 100px)',
+              gap: 2
+            }}>
+              <Box sx={{ 
+                display: 'grid',
+                gridTemplateColumns: '3fr 2fr',
+                gap: 2,
+                flex: 1,
+                overflow: 'hidden'
+              }}>
+                <Box sx={{
                   bgcolor: '#000',
                   borderRadius: 1,
                   overflow: 'hidden',
+                  height: '100%',
                   '& iframe': {
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
                     width: '100%',
                     height: '100%',
                     border: 'none',
                   }
-                }}
-              >
-                <iframe
-                  src={`http://127.0.0.1:${session.vnc_port}/vnc.html?resize=scale`}
-                  allow="clipboard-read; clipboard-write"
-                  title="VNC Session"
-                />
-              </Box>
-            </Box>
-          )}
+                }}>
+                  <iframe
+                    src={`http://127.0.0.1:${session.vnc_port}/vnc.html?resize=scale`}
+                    allow="clipboard-read; clipboard-write"
+                    title="VNC Session"
+                  />
+                </Box>
 
-          {session.video_path && (
-            <Box>
+                {session.tag === 'samthropic' && (
+                  <Box sx={{ 
+                    height: '100%',
+                    overflow: 'hidden'
+                  }}>
+                    <LiveAgentConsole sessionId={session.session_id} />
+                  </Box>
+                )}
+              </Box>
+
+              {session.tag === 'samthropic' && (
+                <Box sx={{ 
+                  width: '100%',
+                  maxWidth: '800px',
+                  mx: 'auto'
+                }}>
+                  <ChatInput 
+                    sessionId={session.session_id} 
+                    onSendMessage={handleSendMessage}
+                    disabled={isProcessing}
+                    placeholder={isProcessing ? "Processing..." : "Enter your task..."}
+                  />
+                </Box>
+              )}
+            </Box>
+          ) : (
+            <Box sx={{ height: 'calc(70vh - 100px)' }}>
               <Typography variant="h6" gutterBottom>
                 Session Recording
               </Typography>
-              <video 
-                controls 
-                width="100%" 
-                src={`/api/videos/${session.session_id}`}
-                preload="auto"
-                style={{
-                  backgroundColor: '#000',
-                  maxHeight: '60vh',
-                  objectFit: 'contain'
-                }}
-                controlsList="nodownload"
-                playsInline
-                onLoadedMetadata={(e) => {
-                  const video = e.target;
-                  // Force metadata reload
-                  if (video.duration === Infinity) {
-                    video.currentTime = 1e101;
-                    video.currentTime = 0;
-                  }
-                }}
-                onSeeking={(e) => {
-                  const video = e.target;
-                  // If seeking fails, try to recover
-                  if (video.currentTime === 0) {
-                    video.load();
-                    video.play();
-                  }
-                }}
-              />
+              <Box sx={{
+                height: 'calc(100% - 32px)',
+                bgcolor: '#000',
+                borderRadius: 1,
+                overflow: 'hidden',
+              }}>
+                <video 
+                  controls 
+                  width="100%" 
+                  height="100%"
+                  src={`/api/videos/${session.session_id}`}
+                  style={{ objectFit: 'contain' }}
+                />
+              </Box>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
           {session.status === 'running' && (
             <Button 
-              onClick={handleStopSession}
+              onClick={() => handleStopSession(session.session_id)}
               color="error"
             >
               Stop Session
