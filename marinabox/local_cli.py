@@ -22,10 +22,16 @@ def local():
 @click.option('--env-type', type=click.Choice(['browser', 'desktop']), default="browser", help='Environment type')
 @click.option('--resolution', default="1280x800x24", help='Screen resolution')
 @click.option('--tag', help='Add a tag to the session')
-def create(env_type, resolution, tag):
+@click.option('--mount', type=click.Path(exists=True, dir_okay=True, file_okay=False), help='Directory to mount into the container at /mnt/host')
+def create(env_type, resolution, tag, mount):
     """Create a new session"""
     manager = LocalContainerManager()
-    session = manager.create_session(env_type=env_type, resolution=resolution, tag=tag)
+    session = manager.create_session(
+        env_type=env_type,
+        resolution=resolution,
+        tag=tag,
+        mount_path=mount
+    )
     click.echo(json.dumps(session.__dict__, cls=DateTimeEncoder, indent=2))
 
 @local.command()

@@ -82,7 +82,7 @@ class LocalContainerManager:
             
         return debug_port, vnc_port, computer_use_port
     
-    def create_session(self, env_type: str = "browser", resolution: str = "1280x800x24", tag: Optional[str] = None) -> BrowserSession:
+    def create_session(self, env_type: str = "browser", resolution: str = "1280x800x24", tag: Optional[str] = None, mount_path: Optional[Path] = None) -> BrowserSession:
         if env_type not in ["browser", "desktop"]:
             raise ValueError("env_type must be either 'browser' or 'desktop'")
 
@@ -96,6 +96,17 @@ class LocalContainerManager:
         if env_type == 'browser':
             ports['9222/tcp'] = debug_port
         
+        # Configure volume mounting
+        volumes = {}
+        if mount_path:
+            mount_path = Path(mount_path).resolve()
+            if not mount_path.exists():
+                raise ValueError(f"Mount path does not exist: {mount_path}")
+            volumes[str(mount_path)] = {
+                'bind': '/mnt/host',
+                'mode': 'rw'
+            }
+        
         # Select appropriate image
         image = "marinabox/marinabox-browser" if env_type == "browser" else "marinabox/marinabox-desktop"
         
@@ -103,7 +114,8 @@ class LocalContainerManager:
             image,
             detach=True,
             environment={"RESOLUTION": resolution},
-            ports=ports
+            ports=ports,
+            volumes=volumes
         )
         
         # Wait for container to be ready
