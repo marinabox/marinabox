@@ -36,7 +36,7 @@ async def main(prompt: str, api_key: str, port: int = 8002):
     
     tools = ToolCollection(computer_tool, bash_tool, edit_tool)
 
-    await sampling_loop(
+    messages = await sampling_loop(
         model="claude-3-5-sonnet-20241022",
         provider="anthropic",
         system_prompt_suffix="",
@@ -49,7 +49,7 @@ async def main(prompt: str, api_key: str, port: int = 8002):
         max_iterations=20
     )
     
-    return responses  # Return the collected responses
+    return responses, messages  # Return the collected responses
 
 if __name__ == "__main__":
     asyncio.run(main())

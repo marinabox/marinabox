@@ -143,4 +143,4 @@ def computer_use(session_identifier, command):
 
     
     # Execute computer use command
-    asyncio.run(computer_use_main(command, api_key, session.computer_use_port)) 
+    responses, messages = asyncio.run(computer_use_main(command, api_key, session.computer_use_port))
