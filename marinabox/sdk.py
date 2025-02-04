@@ -121,5 +121,5 @@ class MarinaboxSDK:
         """
         Synchronous wrapper for execute_computer_use_command
         """
-        responses, messages = asyncio.run(self.execute_computer_use_command(session_identifier, command)) 
-        return responses, messages
+        responses = asyncio.run(self.execute_computer_use_command(session_identifier, command)) 
+        return responses

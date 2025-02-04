@@ -20,6 +20,9 @@ async def main(prompt: str, api_key: str, port: int = 8002):
         if result.output:
             responses.append(("tool_output", result.output))
             print(f"Tool output: {result.output}")
+        if result.base64_image:
+            responses.append(("tool_output_image", result.base64_image))
+            print(f"Tool output: IMAGE")
         if result.error:
             responses.append(("tool_error", result.error))
             print(f"Tool error: {result.error}")
@@ -49,7 +52,7 @@ async def main(prompt: str, api_key: str, port: int = 8002):
         max_iterations=20
     )
     
-    return responses, messages  # Return the collected responses
+    return responses  # Return the collected responses
 
 if __name__ == "__main__":
     asyncio.run(main())
