@@ -82,7 +82,14 @@ class LocalContainerManager:
             
         return debug_port, vnc_port, computer_use_port
     
-    def create_session(self, env_type: str = "browser", resolution: str = "1280x800x24", tag: Optional[str] = None, mount_path: Optional[Path] = None) -> BrowserSession:
+    def create_session(
+        self, 
+        env_type: str = "browser", 
+        resolution: str = "1280x800x24", 
+        tag: Optional[str] = None, 
+        mount_path: Optional[Path] = None,
+        kiosk: bool = False
+    ) -> BrowserSession:
         if env_type not in ["browser", "desktop"]:
             raise ValueError("env_type must be either 'browser' or 'desktop'")
 
@@ -110,10 +117,18 @@ class LocalContainerManager:
         # Select appropriate image
         image = "marinabox/marinabox-browser" if env_type == "browser" else "marinabox/marinabox-desktop"
         
+        # Add environment variables
+        environment_vars = {
+            "RESOLUTION": resolution
+        }
+        # If kiosk is True, add kiosk flags
+        if kiosk and env_type == "browser":
+            environment_vars["KIOSK_OPTS"] = "--kiosk --start-fullscreen"
+        
         container = self.client.containers.run(
             image,
             detach=True,
-            environment={"RESOLUTION": resolution},
+            environment=environment_vars,
             ports=ports,
             volumes=volumes
         )

@@ -23,14 +23,16 @@ def local():
 @click.option('--resolution', default="1280x800x24", help='Screen resolution')
 @click.option('--tag', help='Add a tag to the session')
 @click.option('--mount', type=click.Path(exists=True, dir_okay=True, file_okay=False), help='Directory to mount into the container at /mnt/host')
-def create(env_type, resolution, tag, mount):
+@click.option('--kiosk', is_flag=True, default=False, help='Launch Chrome in kiosk mode (browser env only)')
+def create(env_type, resolution, tag, mount, kiosk):
     """Create a new session"""
     manager = LocalContainerManager()
     session = manager.create_session(
         env_type=env_type,
         resolution=resolution,
         tag=tag,
-        mount_path=mount
+        mount_path=mount,
+        kiosk=kiosk
     )
     click.echo(json.dumps(session.__dict__, cls=DateTimeEncoder, indent=2))
 
