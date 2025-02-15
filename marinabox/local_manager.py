@@ -119,11 +119,9 @@ class LocalContainerManager:
         
         # Add environment variables
         environment_vars = {
-            "RESOLUTION": resolution
+            "RESOLUTION": resolution,
+            "ENV_KIOSK_OPTS": "--kiosk --start-fullscreen" if kiosk and env_type == "browser" else ""
         }
-        # If kiosk is True, add kiosk flags
-        if kiosk and env_type == "browser":
-            environment_vars["KIOSK_OPTS"] = "--kiosk --start-fullscreen"
         
         container = self.client.containers.run(
             image,
