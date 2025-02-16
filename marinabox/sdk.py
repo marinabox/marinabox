@@ -18,7 +18,8 @@ class MarinaboxSDK:
         env_type: str = "browser", 
         resolution: str = "1280x800x24",
         tag: Optional[str] = None,
-        kiosk: bool = False
+        kiosk: bool = False,
+        initial_url: Optional[str] = None
     ) -> BrowserSession:
         """
         Create a new Marinabox session.
@@ -28,6 +29,7 @@ class MarinaboxSDK:
             resolution: Screen resolution (e.g., '1280x800x24')
             tag: Optional tag for the session
             kiosk: Whether to launch Chrome in kiosk mode
+            initial_url: Optional URL to open when Chrome starts
             
         Returns:
             BrowserSession object
@@ -36,7 +38,8 @@ class MarinaboxSDK:
             env_type=env_type, 
             resolution=resolution, 
             tag=tag,
-            kiosk=kiosk
+            kiosk=kiosk,
+            initial_url=initial_url
         )
 
     def list_sessions(self) -> List[BrowserSession]:

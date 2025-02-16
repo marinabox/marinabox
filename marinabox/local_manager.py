@@ -88,7 +88,8 @@ class LocalContainerManager:
         resolution: str = "1280x800x24", 
         tag: Optional[str] = None, 
         mount_path: Optional[Path] = None,
-        kiosk: bool = False
+        kiosk: bool = False,
+        initial_url: Optional[str] = None
     ) -> BrowserSession:
         if env_type not in ["browser", "desktop"]:
             raise ValueError("env_type must be either 'browser' or 'desktop'")
@@ -116,11 +117,12 @@ class LocalContainerManager:
         
         # Select appropriate image
         image = "marinabox/marinabox-browser" if env_type == "browser" else "marinabox/marinabox-desktop"
-        
+        print(f"Initial URL: {initial_url}")
         # Add environment variables
         environment_vars = {
             "RESOLUTION": resolution,
-            "ENV_KIOSK_OPTS": "--kiosk --start-fullscreen" if kiosk and env_type == "browser" else ""
+            "KIOSK_OPTS": "--kiosk --start-fullscreen" if kiosk and env_type == "browser" else "",
+            "INITIAL_URL": initial_url if initial_url else ""
         }
         
         container = self.client.containers.run(
