@@ -133,3 +133,12 @@ class MarinaboxSDK:
         """
         responses = asyncio.run(self.execute_computer_use_command(session_identifier, command)) 
         return responses
+
+    def stop_all_sessions(self) -> Dict[str, bool]:
+        """
+        Stop all active sessions.
+        
+        Returns:
+            Dictionary mapping session IDs to their stop operation success status
+        """
+        return self.manager.stop_all_sessions()

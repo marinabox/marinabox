@@ -148,3 +148,19 @@ def computer_use(session_identifier, command):
     
     # Execute computer use command
     responses = asyncio.run(computer_use_main(command, api_key, session.computer_use_port))
+
+@local.command()
+def stop_all():
+    """Stop all active browser and desktop sessions"""
+    manager = LocalContainerManager()
+    results = manager.stop_all_sessions()
+    
+    success_count = sum(1 for success in results.values() if success)
+    total_count = len(results)
+    
+    if total_count == 0:
+        click.echo("No active sessions found")
+    else:
+        click.echo(f"Successfully stopped {success_count} out of {total_count} sessions")
+        if success_count < total_count:
+            click.echo("Some sessions failed to stop", err=True)

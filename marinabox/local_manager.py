@@ -4,7 +4,7 @@ import time
 import pickle
 import os
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Dict
 from datetime import datetime, timezone
 
 from .models import BrowserSession
@@ -132,6 +132,7 @@ class LocalContainerManager:
             ports=ports,
             volumes=volumes
         )
+        
         
         # Wait for container to be ready
         time.sleep(2)
@@ -296,3 +297,15 @@ class LocalContainerManager:
     def get_input_queue_path(self, session_id: str) -> Path:
         """Get the path to a session's input queue file"""
         return self.input_queue_path / f"{session_id}.txt"
+
+    def stop_all_sessions(self) -> Dict[str, bool]:
+        """
+        Stop all active sessions.
+        
+        Returns:
+            Dictionary mapping session IDs to success status
+        """
+        results = {}
+        for session_id in list(self.sessions.keys()):  # Create a copy of keys to avoid modification during iteration
+            results[session_id] = self.stop_session(session_id)
+        return results
