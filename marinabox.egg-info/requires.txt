@@ -1,0 +1,16 @@
+docker
+requests
+fastapi
+uvicorn
+click
+boto3
+streamlit>=1.38.0
+anthropic[bedrock,vertex]>=0.37.1
+jsonschema==4.22.0
+google-auth<3,>=2
+pytest==8.3.3
+pytest-asyncio==0.23.6
+langgraph==0.2.60
+langchain-anthropic==0.3.1
+langchain-openai==0.2.2
+langchain-core==0.3.28

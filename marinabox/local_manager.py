@@ -116,7 +116,8 @@ class LocalContainerManager:
             }
         
         # Select appropriate image
-        image = "marinabox/marinabox-browser" if env_type == "browser" else "marinabox/marinabox-desktop"
+        from .config_images import get_browser_image, get_desktop_image
+        image = get_browser_image() if env_type == "browser" else get_desktop_image()
         print(f"Initial URL: {initial_url}")
         # Add environment variables
         environment_vars = {
