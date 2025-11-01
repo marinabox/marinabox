@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="marinabox",
-    version="0.1.9",
+    version="1.0.0",
     packages=find_packages(),
     install_requires=[
         "docker",
@@ -12,7 +12,7 @@ setup(
         "click",
         "boto3",
         "streamlit>=1.38.0",
-        "anthropic[bedrock,vertex]>=0.37.1",
+        "anthropic[bedrock,vertex]>=0.52.0",
         "jsonschema==4.22.0",
         "google-auth<3,>=2",
         "pytest==8.3.3",

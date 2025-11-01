@@ -4,7 +4,7 @@ docker==6.1.3
 requests==2.31.0
 python-multipart==0.0.6
 streamlit>=1.38.0
-anthropic[bedrock,vertex]>=0.37.1
+anthropic[bedrock,vertex]>=0.52.0
 jsonschema==4.22.0
 boto3>=1.28.57
 google-auth<3,>=2

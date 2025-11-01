@@ -40,7 +40,7 @@ async def main(prompt: str, api_key: str, port: int = 8002):
     tools = ToolCollection(computer_tool, bash_tool, edit_tool)
 
     messages = await sampling_loop(
-        model="claude-3-5-sonnet-20241022",
+        model="claude-haiku-4-5",
         provider="anthropic",
         system_prompt_suffix="",
         messages=messages,

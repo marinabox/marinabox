@@ -2,7 +2,7 @@ import asyncio
 import os
 from typing import ClassVar, Literal
 
-from anthropic.types.beta import BetaToolBash20241022Param
+from anthropic.types.beta import BetaToolBash20250124Param
 import httpx
 
 from .base import BaseAnthropicTool, CLIResult, ToolError, ToolResult
@@ -112,7 +112,7 @@ class BashTool(BaseAnthropicTool):
 
     _session: _BashSession | None
     name: ClassVar[Literal["bash"]] = "bash"
-    api_type: ClassVar[Literal["bash_20241022"]] = "bash_20241022"
+    api_type: ClassVar[Literal["bash_20250124"]] = "bash_20250124"
 
     def __init__(self):
         self._session = None
@@ -139,7 +139,7 @@ class BashTool(BaseAnthropicTool):
         except httpx.HTTPError as e:
             return ToolResult(error=f"API request failed: {str(e)}")
 
-    def to_params(self) -> BetaToolBash20241022Param:
+    def to_params(self) -> BetaToolBash20250124Param:
         return {
             "type": self.api_type,
             "name": self.name,

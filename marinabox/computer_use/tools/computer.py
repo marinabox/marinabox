@@ -9,7 +9,7 @@ from typing import Literal, TypedDict
 from uuid import uuid4
 import httpx
 
-from anthropic.types.beta import BetaToolComputerUse20241022Param
+from anthropic.types.beta import BetaToolComputerUse20250124Param
 
 from .base import BaseAnthropicTool, ToolError, ToolResult
 from .run import run
@@ -30,6 +30,7 @@ Action = Literal[
     "double_click",
     "screenshot",
     "cursor_position",
+    "wait",
 ]
 
 
@@ -66,7 +67,7 @@ class ComputerTool(BaseAnthropicTool):
     """A tool that allows the agent to interact with the screen, keyboard, and mouse via API."""
 
     name: Literal["computer"] = "computer"
-    api_type: Literal["computer_20241022"] = "computer_20241022"
+    api_type: Literal["computer_20250124"] = "computer_20250124"
     width: int = 1280
     height: int = 800
     
@@ -83,7 +84,7 @@ class ComputerTool(BaseAnthropicTool):
             "display_number": None
         }
 
-    def to_params(self) -> BetaToolComputerUse20241022Param:
+    def to_params(self) -> BetaToolComputerUse20250124Param:
         return {"name": self.name, "type": self.api_type, **self.options}
 
     async def __call__(
@@ -115,6 +116,12 @@ class ComputerTool(BaseAnthropicTool):
                     raise ToolError(f"{text} must be a string")
 
             # API calls
+            if action == "wait":
+                duration = kwargs.get("duration", 1)
+                if not isinstance(duration, (int, float)) or duration < 0:
+                    raise ToolError("duration must be a non-negative number for wait")
+                await asyncio.sleep(duration)
+                return ToolResult(output=f"waited {duration} seconds")
             if action == "screenshot":
                 response = await self.client.get(f"{self.api_base_url}/screenshot")
                 response.raise_for_status()
@@ -127,8 +134,16 @@ class ComputerTool(BaseAnthropicTool):
             if coordinate:
                 params["coordinate"] = list(coordinate)  # Convert tuple to list for JSON
 
+            # Improve reliability: move first, then click for pointer actions
+            if action in ("left_click", "right_click", "double_click") and coordinate is not None:
+                await self.client.post(
+                    f"{self.api_base_url}/input/mouse_move",
+                    json={"coordinate": list(coordinate)}
+                )
+                await asyncio.sleep(0.05)
+
             response = await self.client.post(
-                f"{self.api_base_url}/input/{action}", 
+                f"{self.api_base_url}/input/{action}",
                 json=params
             )
             response.raise_for_status()
