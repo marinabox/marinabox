@@ -34,13 +34,13 @@ async def main(prompt: str, api_key: str, port: int = 8002):
     messages = [{"role": "user", "content": [{"type": "text", "text": prompt}]}]
 
     computer_tool = ComputerTool(port=port)
-    bash_tool = BashTool()
-    edit_tool = EditTool()
+    bash_tool = BashTool(port=port)
+    edit_tool = EditTool(port=port)
     
     tools = ToolCollection(computer_tool, bash_tool, edit_tool)
 
     messages = await sampling_loop(
-        model="claude-haiku-4-5",
+        model="claude-sonnet-4-5",
         provider="anthropic",
         system_prompt_suffix="",
         messages=messages,
@@ -49,7 +49,7 @@ async def main(prompt: str, api_key: str, port: int = 8002):
         api_response_callback=api_response_callback,
         api_key=api_key,
         tools=tools,
-        max_iterations=20
+        max_iterations=100
     )
     
     return responses  # Return the collected responses

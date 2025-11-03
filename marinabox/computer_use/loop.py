@@ -64,7 +64,6 @@ SYSTEM_PROMPT = f"""<SYSTEM_CAPABILITY>
 Make sure to carefully follow the instruction given by the user.
 </IMPORTANT>"""
 
-
 async def sampling_loop(
     *,
     model: str,

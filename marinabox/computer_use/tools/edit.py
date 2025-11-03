@@ -7,6 +7,18 @@ from anthropic.types.beta import BetaToolTextEditor20250728Param
 from .base import BaseAnthropicTool, CLIResult, ToolError, ToolResult
 from .run import maybe_truncate, run
 import httpx
+def _http_error_detail(e: Exception) -> str:
+    if isinstance(e, httpx.HTTPStatusError) and e.response is not None:
+        try:
+            body = e.response.text
+        except Exception:
+            body = "<no body>"
+        req = e.request
+        return f"{e.response.status_code} {e.response.reason_phrase} {req.method} {req.url} body={body}"
+    if isinstance(e, httpx.TimeoutException):
+        req = getattr(e, "request", None)
+        return f"timeout {getattr(req, 'method', '')} {getattr(req, 'url', '')}"
+    return repr(e)
 
 Command = Literal[
     "view",
@@ -29,8 +41,8 @@ class EditTool(BaseAnthropicTool):
 
     _file_history: dict[Path, list[str]]
 
-    def __init__(self):
-        self.api_base_url = "http://localhost:8002"
+    def __init__(self, port: int = 8002):
+        self.api_base_url = f"http://localhost:{port}"
         self.client = httpx.AsyncClient()
         self._file_history = defaultdict(list)
         super().__init__()
@@ -71,7 +83,7 @@ class EditTool(BaseAnthropicTool):
             return CLIResult(output=data.get("output"), error=data.get("error"))
 
         except httpx.HTTPError as e:
-            return ToolResult(error=f"API request failed: {str(e)}")
+            return ToolResult(error=f"API request failed: {_http_error_detail(e)}")
 
     def validate_path(self, command: str, path: Path):
         """

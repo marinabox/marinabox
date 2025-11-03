@@ -6,6 +6,19 @@ from anthropic.types.beta import BetaToolBash20250124Param
 import httpx
 
 from .base import BaseAnthropicTool, CLIResult, ToolError, ToolResult
+def _http_error_detail(e: Exception) -> str:
+    if isinstance(e, httpx.HTTPStatusError) and e.response is not None:
+        try:
+            body = e.response.text
+        except Exception:
+            body = "<no body>"
+        req = e.request
+        return f"{e.response.status_code} {e.response.reason_phrase} {req.method} {req.url} body={body}"
+    if isinstance(e, httpx.TimeoutException):
+        req = getattr(e, "request", None)
+        return f"timeout {getattr(req, 'method', '')} {getattr(req, 'url', '')}"
+    return repr(e)
+
 
 
 class _BashSession:
@@ -114,9 +127,9 @@ class BashTool(BaseAnthropicTool):
     name: ClassVar[Literal["bash"]] = "bash"
     api_type: ClassVar[Literal["bash_20250124"]] = "bash_20250124"
 
-    def __init__(self):
+    def __init__(self, port: int = 8002):
         self._session = None
-        self.api_base_url = "http://localhost:8002"
+        self.api_base_url = f"http://localhost:{port}"
         self.client = httpx.AsyncClient()
         super().__init__()
 
@@ -137,7 +150,7 @@ class BashTool(BaseAnthropicTool):
             return CLIResult(output=data.get("output"), error=data.get("error"))
 
         except httpx.HTTPError as e:
-            return ToolResult(error=f"API request failed: {str(e)}")
+            return ToolResult(error=f"API request failed: {_http_error_detail(e)}")
 
     def to_params(self) -> BetaToolBash20250124Param:
         return {
