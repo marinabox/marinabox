@@ -4,4 +4,4 @@ from .sdk import MarinaboxSDK
 from .langgraph import mb_start_computer, mb_stop_computer, mb_use_computer_tool, mb_start_browser, mb_stop_browser, mb_use_browser_tool
 
 __version__ = "1.0.2"
-__all__ = ['MarinaboxSDK', 'mb_start_computer', 'mb_stop_computer', 'mb_use_computer_tool', 'mb_start_browser', 'mb_stop_browser', 'mb_use_browser_tool'`]
+__all__ = ['MarinaboxSDK', 'mb_start_computer', 'mb_stop_computer', 'mb_use_computer_tool', 'mb_start_browser', 'mb_stop_browser', 'mb_use_browser_tool', 'Computer']
