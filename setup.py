@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="marinabox",
-    version="1.0.2",
+    version="1.0.4",
     packages=find_packages(),
     install_requires=[
         "docker",
